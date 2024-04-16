@@ -7,16 +7,30 @@ import numpy as np
 import pandas as pd
 from skimage.measure import block_reduce
 from skimage.color import rgb2gray
+
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
+
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import seaborn as sns
+
+from skimage.measure import block_reduce
+from skimage.color import rgb2gray
 from tensorflow.keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import f1_score
+from sklearn.metrics import fbeta_score
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
 import matplotlib.pyplot as plt
-
 
 def load_data(path_to_data, DOWNSAMPLE_FACTOR = 7):
     '''Load 2D images and their corresponding labels
@@ -118,16 +132,28 @@ def plot_confusion_matrix(model, true_labels, predicted_labels):
     disp.plot()
 
 
-def compute_metrics():
+def compute_metrics(true_labels, predicted_labels):
     # Accuracy
-
+    accuracy = accuracy_score(true_labels, predicted_labels)
+    print('Accuracy:', accuracy)
     # Precision
-
+    precision = precision_score(true_labels, predicted_labels, pos_label="wildfire")
+    print('Precision:', precision)
     # Recall
+    recall = recall_score(true_labels, predicted_labels, pos_label="wildfire")
+    print('Recall:', recall)
+    # F1 
+    f1 = fbeta_score(true_labels, predicted_labels, pos_label="wildfire", beta=1, average ='binary')
+    print('F1:', f1)
 
-    # F1 Beta
+    f2 = fbeta_score(true_labels, predicted_labels, pos_label="wildfire", beta=2, average ='binary')
+    print('F2:', f2)
+    #return accuracy, precision, recall, f1
 
-    # F2 Beta
-
-    return None
-    
+def resize_imgs(data, target=(224, 224)):
+    resized_images = []
+    for img_array in data:
+        img = Image.fromarray(np.uint8(img_array))
+        resized_img = img.resize(target)
+        resized_images.append(resized_img)
+    return np.array(resized_images)
